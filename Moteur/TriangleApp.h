@@ -3,6 +3,7 @@
 #include "Utils.h"
 #include <WindowsX.h>
 #include "UploadBuffer.h"
+#include "Camera.h"
 
 
 using Microsoft::WRL::ComPtr;
@@ -58,6 +59,7 @@ private :
 	XMFLOAT4X4 m_fWorld = Identity4x4();
 	XMFLOAT4X4 m_fView = Identity4x4();
 	XMFLOAT4X4 m_fProj = Identity4x4();
+	Camera* m_oCamera;
 	
 };
 

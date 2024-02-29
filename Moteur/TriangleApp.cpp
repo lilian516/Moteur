@@ -1,6 +1,7 @@
 #include "TriangleApp.h"
 
 #include "Utils.h"
+#include "Camera.h"
 
 #include "UploadBuffer.h"
 
@@ -13,7 +14,8 @@ struct Vertex
 
 TriangleApp::TriangleApp(HINSTANCE hInstance) : App(hInstance)
 {
-
+	m_oCamera = new Camera();
+	m_oCamera->initCamera(m_iClientWidth, m_iClientHeight);
 }
 
 bool TriangleApp::initTriangle() {
@@ -228,6 +230,8 @@ void TriangleApp::buildPSO()
 
 void TriangleApp::update()
 {
+	
+	XMMATRIX mMatrixView = m_oCamera->update();
 	// Convert Spherical to Cartesian coordinates.
 	float x = m_fRadius * sinf(m_fPhi) * cosf(m_fTheta);
 	float z = m_fRadius * sinf(m_fPhi) * sinf(m_fTheta);
@@ -243,7 +247,7 @@ void TriangleApp::update()
 
 	XMMATRIX world = XMLoadFloat4x4(&m_fWorld);
 	XMMATRIX proj = XMLoadFloat4x4(&m_fProj);
-	XMMATRIX worldViewProj = world * view * proj;
+	XMMATRIX worldViewProj = world * mMatrixView * proj;
 
 	// Update the constant buffer with the latest worldViewProj matrix.
 	ObjectConstants objConstants;
