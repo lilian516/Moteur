@@ -20,50 +20,61 @@ void Camera::initCamera(int windowWidth, int windowHeight) {
     m_mViewMatrix = XMMatrixLookAtLH(XMLoadFloat3(&m_fCameraPosition), XMLoadFloat3(&m_fCameraTarget), XMLoadFloat3(&m_fCameraUp));
     //GetCursorPos(&m_pMousePose);
     //m_pMousePose = Point(400, 300);
-    m_pMousePose.x = 400;
-    m_pMousePose.y = 300;
+    
+    m_pMousePose.x = 960;
+    m_pMousePose.y = 540;
 
 }
 
 XMMATRIX Camera::update() {
     POINT currentCursorPose;
     GetCursorPos(&currentCursorPose);
-    if (m_pMousePose.x > currentCursorPose.x) {
-        XMVECTOR forward = XMVector3Normalize(XMVectorSubtract(XMLoadFloat3(&m_fCameraTarget), XMLoadFloat3(&m_fCameraPosition)));
-        XMFLOAT3 forwardMovement;
-        XMStoreFloat3(&forwardMovement, XMVectorScale(forward, m_fCameraMoveSpeed));
-        m_fCameraPosition.x += forwardMovement.x;
-        m_fCameraPosition.z += forwardMovement.z;
-        m_fCameraTarget.x += forwardMovement.x;
-        m_fCameraTarget.z += forwardMovement.z;
+    if (GetAsyncKeyState(VK_LBUTTON)) {
+        if (m_pMousePose.y > currentCursorPose.y) {
+            // Move camera up
+            XMVECTOR upDirection = XMVector3Normalize(XMLoadFloat3(&m_fCameraUp));
+            XMFLOAT3 upMovement;
+            XMStoreFloat3(&upMovement, XMVectorScale(upDirection, m_fCameraMoveSpeed));
+            m_fCameraPosition.x += upMovement.x;
+            m_fCameraPosition.y += upMovement.y;
+            m_fCameraPosition.z += upMovement.z;
+            m_fCameraTarget.x += upMovement.x;
+            m_fCameraTarget.y += upMovement.y;
+            m_fCameraTarget.z += upMovement.z;
+        }
+        if (m_pMousePose.y < currentCursorPose.y) {
+            // Move camera down
+            XMVECTOR downDirection = XMVectorNegate(XMVector3Normalize(XMLoadFloat3(&m_fCameraUp)));
+            XMFLOAT3 downMovement;
+            XMStoreFloat3(&downMovement, XMVectorScale(downDirection, m_fCameraMoveSpeed));
+            m_fCameraPosition.x += downMovement.x;
+            m_fCameraPosition.y += downMovement.y;
+            m_fCameraPosition.z += downMovement.z;
+            m_fCameraTarget.x += downMovement.x;
+            m_fCameraTarget.y += downMovement.y;
+            m_fCameraTarget.z += downMovement.z;
+        }
+        if (m_pMousePose.x < currentCursorPose.x) {
+            XMVECTOR left = XMVector3Normalize(XMVector3Cross(XMLoadFloat3(&m_fCameraUp), XMVectorSubtract(XMLoadFloat3(&m_fCameraTarget), XMLoadFloat3(&m_fCameraPosition))));
+            XMFLOAT3 leftMovement;
+            XMStoreFloat3(&leftMovement, XMVectorScale(left, m_fCameraMoveSpeed));
+            m_fCameraPosition.x += leftMovement.x;
+            m_fCameraPosition.z += leftMovement.z;
+            m_fCameraTarget.x += leftMovement.x;
+            m_fCameraTarget.z += leftMovement.z;
+        }
+        if (m_pMousePose.x > currentCursorPose.x) {
+            XMVECTOR right = XMVector3Normalize(XMVector3Cross(XMVectorSubtract(XMLoadFloat3(&m_fCameraTarget), XMLoadFloat3(&m_fCameraPosition)), XMLoadFloat3(&m_fCameraUp)));
+            XMFLOAT3 rightMovement;
+            XMStoreFloat3(&rightMovement, XMVectorScale(right, m_fCameraMoveSpeed));
+            m_fCameraPosition.x += rightMovement.x;
+            m_fCameraPosition.z += rightMovement.z;
+            m_fCameraTarget.x += rightMovement.x;
+            m_fCameraTarget.z += rightMovement.z;
+        }
     }
-    if (m_pMousePose.x < currentCursorPose.x) {
-        XMVECTOR backward = XMVector3Normalize(XMVectorSubtract(XMLoadFloat3(&m_fCameraPosition), XMLoadFloat3(&m_fCameraTarget)));
-        XMFLOAT3 backwardMovement;
-        XMStoreFloat3(&backwardMovement, XMVectorScale(backward, m_fCameraMoveSpeed));
-        m_fCameraPosition.x += backwardMovement.x;
-        m_fCameraPosition.z += backwardMovement.z;
-        m_fCameraTarget.x += backwardMovement.x;
-        m_fCameraTarget.z += backwardMovement.z;
-    }
-    if (m_pMousePose.y > currentCursorPose.y) {
-        XMVECTOR left = XMVector3Normalize(XMVector3Cross(XMLoadFloat3(&m_fCameraUp), XMVectorSubtract(XMLoadFloat3(&m_fCameraTarget), XMLoadFloat3(&m_fCameraPosition))));
-        XMFLOAT3 leftMovement;
-        XMStoreFloat3(&leftMovement, XMVectorScale(left, m_fCameraMoveSpeed));
-        m_fCameraPosition.x += leftMovement.x;
-        m_fCameraPosition.z += leftMovement.z;
-        m_fCameraTarget.x += leftMovement.x;
-        m_fCameraTarget.z += leftMovement.z;
-    }
-    if (m_pMousePose.y < currentCursorPose.y) {
-        XMVECTOR right = XMVector3Normalize(XMVector3Cross(XMVectorSubtract(XMLoadFloat3(&m_fCameraTarget), XMLoadFloat3(&m_fCameraPosition)), XMLoadFloat3(&m_fCameraUp)));
-        XMFLOAT3 rightMovement;
-        XMStoreFloat3(&rightMovement, XMVectorScale(right, m_fCameraMoveSpeed));
-        m_fCameraPosition.x += rightMovement.x;
-        m_fCameraPosition.z += rightMovement.z;
-        m_fCameraTarget.x += rightMovement.x;
-        m_fCameraTarget.z += rightMovement.z;
-    }
+    
+    
     
    
     
